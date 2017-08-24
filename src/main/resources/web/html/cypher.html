@@ -28,6 +28,8 @@
     <link rel="stylesheet" type="text/css" href="../stylesheets/spectre-icons.min.css" />
     <link rel="stylesheet" type="text/css" href="../stylesheets/jquery.qtip.css">
     <link rel="stylesheet" type="text/css" href="../stylesheets/select2.min.css">
+    <link rel="stylesheet" type="text/css" href="../stylesheets/codeMirror/codemirror.css">
+    <link rel="stylesheet" type="text/css" href="../stylesheets/codeMirror/neo.css">
     <link rel="stylesheet" type="text/css" href="../stylesheets/layout.css">
 
     <script src="../javascript/jquery-1.11.3.min.js"></script>
@@ -36,10 +38,8 @@
     <script src="../javascript/jquery.qtip.min.js"></script>
     <script src="../javascript/cytoscape/dagre.js"></script>
     <script src="../javascript/cytoscape/cytoscape-dagre.js"></script>
-    <script src="../javascript/ace_editor/ace.js" type="text/javascript" charset="utf-8"></script>
-    <script src="../javascript/ace_editor/ext-language_tools.js" type="text/javascript" charset="utf-8"></script>
-    <script src="../javascript/ace_editor/theme-chrome.js" type="text/javascript" charset="utf-8"></script>
-    <script src="../javascript/ace_editor/cypher_highlight_rules.js"></script>
+    <script src="../javascript/codeMirror/codemirror.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../javascript/codeMirror/cypher.js" type="text/javascript" charset="utf-8"></script>
     <script src="../javascript/select2.full.min.js"></script>
     <script src="../javascript/cypher.js"></script>
 </head>
@@ -82,8 +82,8 @@
 
                             <div class="form-group">
                                 <label class="form-label" for="query">Query</label>
-                                <input class="hidden-query-field" id="query" name="query" value="MATCH (n:person) where n.firstName='Paul'">
-                                <div id="editor">MATCH (n:person) WHERE n.firstName='Paul'</div>
+                                <textarea id="query" name="query">MATCH (n:person)
+WHERE n.firstName='Paul'</textarea>
                             </div>
 
                             <div class="form-group">

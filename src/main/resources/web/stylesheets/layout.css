@@ -62,12 +62,7 @@ form fieldset {
     width: content-box;
     height: 200px; }
 
-.hidden-query-field {
-  display: none; }
-
-#editor {
-  width: 100%;
-  height: 40%;
+.CodeMirror {
   border: .1rem solid #c4c9d3; }
 
 #canvas {

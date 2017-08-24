@@ -350,14 +350,12 @@ function generateRandomColors(labels) {
  * Initializes an instance of the ACE editor with a custom cypher syntax highlighter
  */
 function initializeCypherEditor() {
-    var langTools = ace.require("ace/ext/language_tools");
-    var editor = ace.edit("editor");
-    editor.setTheme("ace/theme/chrome");
-    editor.getSession().setMode("ace/mode/cypher");
-    editor.renderer.setShowGutter(false);
-    document.getElementById('editor').style.fontSize='18px';
-
-    editor.getSession().on('change', function(e) {
-        $('#query').val(editor.getValue());
-    })
+    let textArea = document.getElementById("query");
+    CodeMirror.fromTextArea(textArea, {
+        mode: "cypher",
+        theme: "neo",
+        lineNumbers: true,
+    }).on("change", function(editor) {
+        $("#query").val(editor.doc.getValue());
+    });
 }
