@@ -27,7 +27,11 @@ import org.glassfish.grizzly.http.server.StaticHttpHandler;
 
 import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.URI;
+import java.net.UnknownHostException;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * Basic class, used for starting and stopping the server.
@@ -37,7 +41,7 @@ public class Server {
   /**
    * URI that specifies where the server is run.
    */
-  private static final URI BASE_URI = getBaseURI();
+//  private static final URI BASE_URI = getBaseURI();
   /**
    * Default port
    */
@@ -51,8 +55,8 @@ public class Server {
    * Creates the base URI.
    * @return Base URI
    */
-  private static URI getBaseURI() {
-    return UriBuilder.fromUri("http://10.3.2.27/").port(PORT).build();
+  private static URI getBaseURI(String ip) {
+    return UriBuilder.fromUri("http://" + ip + "/").port(PORT).build();
   }
 
   /**
@@ -61,15 +65,18 @@ public class Server {
    * @return the running server
    * @throws IOException if server creation fails
    */
-  private static HttpServer startServer() throws IOException {
+  private static HttpServer startServer(String[] args) throws IOException {
     System.out.println("Starting grizzly...");
     ResourceConfig rc = new PackagesResourceConfig("org/gradoop/demo/server");
     rc.getFeatures().put(JSONConfiguration.FEATURE_POJO_MAPPING, true);
-    HttpServer server = GrizzlyServerFactory.createHttpServer(BASE_URI, rc);
+    String ip = args.length == 0 ? "localhost" : args[0];
+    URI baseURI = getBaseURI(ip);
+    HttpServer server = GrizzlyServerFactory.createHttpServer(baseURI, rc);
     HttpHandler staticHandler = new StaticHttpHandler(
       Server.class.getResource("/web").getPath());
     server.getServerConfiguration().addHttpHandler( staticHandler, "/gradoop" );
-
+    System.out.printf("org.gradoop.demos.grouping.server started at %s%s%n" +
+        "Kill the process or ^c to stop it.%n", baseURI, APPLICATION_PATH);
     return server;
   }
 
@@ -79,11 +86,15 @@ public class Server {
    * @param args command line parameters
    * @throws IOException if server creation fails
    */
-  public static void main(String[] args) throws IOException {
-    HttpServer httpServer = startServer();
-    System.out.printf("org.gradoop.demos.grouping.server started at %s%s%n" +
-      "Press any key to stop it.%n", getBaseURI(), APPLICATION_PATH);
-    //System.in.read();
-    //httpServer.stop();
+  public static void main(String[] args) throws IOException, InterruptedException {
+    HttpServer httpServer = startServer(args);
+//    System.in.read();
+//    httpServer.stop();
+      // for nohup
+      BlockingQueue<String> q = new ArrayBlockingQueue<>(1);
+      synchronized (q) {
+          while (q.isEmpty())
+              q.wait();
+      }
   }
 }
