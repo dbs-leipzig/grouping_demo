@@ -52,7 +52,7 @@ public class Server {
    * @return Base URI
    */
   private static URI getBaseURI() {
-    return UriBuilder.fromUri("http://localhost/").port(PORT).build();
+    return UriBuilder.fromUri("http://10.3.2.27/").port(PORT).build();
   }
 
   /**
@@ -83,7 +83,7 @@ public class Server {
     HttpServer httpServer = startServer();
     System.out.printf("org.gradoop.demos.grouping.server started at %s%s%n" +
       "Press any key to stop it.%n", getBaseURI(), APPLICATION_PATH);
-    System.in.read();
-    httpServer.stop();
+    //System.in.read();
+    //httpServer.stop();
   }
 }
