@@ -55,6 +55,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import static org.gradoop.demo.server.Server.ENV;
+
 /**
  * Handles REST requests to the server.
  */
@@ -63,7 +65,6 @@ public class RequestHandler {
 
   private final String META_FILENAME = "/metadata.json";
 
-  private static final ExecutionEnvironment ENV = ExecutionEnvironment.createLocalEnvironment();
   private GradoopFlinkConfig config = GradoopFlinkConfig.createConfig(ENV);
 
   /**
