@@ -95,7 +95,7 @@ public class Server {
         }
         URI baseURI = getBaseURI(ip);
         ENV = getExecutionEnvironment(jmHost, jmPort);
-        System.out.println("Environment: " + ENV);
+        System.out.println("Execution Environment: " + ENV);
         HttpServer server = GrizzlyServerFactory.createHttpServer(baseURI, rc);
         HttpHandler staticHandler = new StaticHttpHandler(
             Server.class.getResource("/web").getPath());
@@ -110,10 +110,7 @@ public class Server {
         if (DEFAULT_JM.equals(jmHost)) {
             return createLocalEnvironment();
         }
-        URL[] globalCP = new URL[] {
-            new URL("file:///Users/kedar/gh/kedar-gradoop-demo-fork/target/gradoop-demo-shaded.jar")
-        };
-        ExecutionEnvironment ee =  new RemoteEnvironment(jmHost, jmPort, null, null, globalCP);
+        ExecutionEnvironment ee =  new RemoteEnvironment(jmHost, jmPort);
         System.out.println("ee exec mode: " + ee.getConfig().getExecutionMode());
         return ee;
     }
