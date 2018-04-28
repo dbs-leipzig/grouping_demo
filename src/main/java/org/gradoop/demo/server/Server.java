@@ -38,6 +38,7 @@ import java.util.concurrent.BlockingQueue;
 import javax.ws.rs.core.UriBuilder;
 
 import static java.lang.System.exit;
+import static java.lang.System.setOut;
 import static java.util.Objects.requireNonNull;
 import static org.apache.flink.api.java.ExecutionEnvironment.createLocalEnvironment;
 import static org.apache.flink.api.java.ExecutionEnvironment.createRemoteEnvironment;
@@ -109,7 +110,20 @@ public class Server {
         if (DEFAULT_JM.equals(jmHost)) {
             return createLocalEnvironment();
         }
-        ExecutionEnvironment ee =  new RemoteEnvironment(jmHost, jmPort);
+//        String m2 = "/.m2/repository/org/gradoop";
+//        String[] jarFiles = {
+//          System.getProperty("user.home") + m2 + "/gradoop-common/0.3.2/gradoop-common-0.3.2.jar",
+//          System.getProperty("user.home") + m2 + "/gradoop-flink/0.3.2/gradoop-flink-0.3.2.jar"
+//        };
+        String[] jarFiles = {
+            System.getProperty("user.dir") + "/target/gradoop-demo-shaded.jar"
+        };
+//        URL[] globalCP = {
+//            new URL("file://" + System.getProperty("user.dir") + "/target/gradoop-demo-shaded.jar")
+//        };
+        ExecutionEnvironment ee =  ExecutionEnvironment.createRemoteEnvironment(jmHost, jmPort, jarFiles);
+//        ExecutionEnvironment ee =  ExecutionEnvironment.createRemoteEnvironment(jmHost, jmPort);
+
         System.out.println("ee exec mode: " + ee.getConfig().getExecutionMode());
         return ee;
     }
