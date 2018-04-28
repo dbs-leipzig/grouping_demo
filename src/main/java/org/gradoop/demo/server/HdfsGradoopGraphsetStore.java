@@ -58,6 +58,8 @@ public class HdfsGradoopGraphsetStore extends Configured implements GradoopGraph
                 if (name != null) {
                     dataSources.add(name); // return value ignored
                     log.debug("adding graphset: " + name);
+                } else {
+                    log.debug("not a graphset, ignoring: " + name);
                 }
             }
         } catch (Exception e) {
