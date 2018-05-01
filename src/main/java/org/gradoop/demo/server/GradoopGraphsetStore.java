@@ -15,5 +15,5 @@ public interface GradoopGraphsetStore {
      * could be a set of files, for instance, if the DataSource is a {@linkplain org.gradoop.flink.io.impl.csv.CSVDataSource},
      * then it is a folder with three files: <code>vertices.csv, edges.csv, and metadata.csv</code>.
      */
-    Set<String> getDataSourceNames() throws IOException; // todo: consider returning List<DataSource>
+    Set<String> getDataSourceNames() throws IOException;
 }

@@ -121,7 +121,7 @@ public class Server {
 //        URL[] globalCP = {
 //            new URL("file://" + System.getProperty("user.dir") + "/target/gradoop-demo-shaded.jar")
 //        };
-        ExecutionEnvironment ee =  ExecutionEnvironment.createRemoteEnvironment(jmHost, jmPort, jarFiles);
+        ExecutionEnvironment ee =  ExecutionEnvironment.createRemoteEnvironment(jmHost, jmPort, null);
 //        ExecutionEnvironment ee =  ExecutionEnvironment.createRemoteEnvironment(jmHost, jmPort);
 
         System.out.println("ee exec mode: " + ee.getConfig().getExecutionMode());
