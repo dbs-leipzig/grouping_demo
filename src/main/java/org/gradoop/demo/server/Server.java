@@ -54,6 +54,7 @@ public class Server {
 //  private static final URI BASE_URI = getBaseURI();
     public static final String DEFAULT_JM = "local";
     static volatile ExecutionEnvironment ENV = null; // volatile is just to ensure visibility
+    static volatile GradoopGraphsetStore LOCAL_STORE = null;
     /**
      * Default port
      */

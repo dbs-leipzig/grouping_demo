@@ -23,7 +23,7 @@ import static java.util.Objects.requireNonNull;
 /**
  * <p>Represents a store of graphsets that are available to explore using Gradoop and that are stored in HDFS.</p>
  */
-public class HdfsGradoopGraphsetStore extends Configured implements GradoopGraphsetStore {
+public class HdfsGradoopGraphsetStore extends Configured {
 
     public static final String DEFAULT_BASE_PATH = "/app/ugraph/gradoop-graphsets/";
     private static final Logger log = LoggerFactory.getLogger(HdfsGradoopGraphsetStore.class);
@@ -42,7 +42,6 @@ public class HdfsGradoopGraphsetStore extends Configured implements GradoopGraph
         this.basePath = basePath;
     }
 
-    @Override
     public Set<String> getDataSourceNames() throws IOException {
         Path basePath = new Path(this.clusterUri + this.basePath);
         FileSystem fs = basePath.getFileSystem(new Configuration(true));
