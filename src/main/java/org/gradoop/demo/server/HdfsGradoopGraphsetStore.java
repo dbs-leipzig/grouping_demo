@@ -3,22 +3,21 @@ package org.gradoop.demo.server;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.FileUtil;
 import org.apache.hadoop.fs.LocatedFileStatus;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.RemoteIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static java.util.Objects.requireNonNull;
+import static org.gradoop.demo.server.Constants.GRADOOP_FILE_NAMES;
 
 /**
  * <p>Represents a store of graphsets that are available to explore using Gradoop and that are stored in HDFS.</p>
@@ -84,5 +83,23 @@ public class HdfsGradoopGraphsetStore extends Configured {
             return folder;
         }
         return null;
+    }
+
+    /* package-private */void copyGradoopFiles(String graphsetName, File localBase) throws Exception {
+        // copying all the files is critical, so make it an all-or-nothing operations, cleaning up
+        // however, transactional semantics are not intended here
+        Path basePath = new Path(this.clusterUri + this.basePath);
+        FileSystem fs = basePath.getFileSystem(new Configuration(true));
+        Path localPath = new Path(localBase.getAbsolutePath());
+        try {
+            for (String f : GRADOOP_FILE_NAMES) {
+                Path remotePath = new Path(this.basePath + "/" + graphsetName + "/" + f);
+                fs.copyToLocalFile(true, remotePath, localPath);
+            }
+        } catch (Exception e) {
+            log.warn("Error copying graphset: {}, deleting the whole folder: " + e.getMessage());
+            FileUtil.fullyDelete(new File(localPath.toString() + "/" + graphsetName));
+            throw e; //rethrow
+        }
     }
 }

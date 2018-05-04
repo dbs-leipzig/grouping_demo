@@ -21,7 +21,6 @@ import static org.gradoop.demo.server.HdfsGradoopGraphsetStore.DEFAULT_BASE_PATH
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-@Ignore
 public class HdfsGradoopGraphsetStoreBasicTest {
 
     //todo: this test is botched because of the JAR hell!
@@ -34,8 +33,10 @@ public class HdfsGradoopGraphsetStoreBasicTest {
         File baseDir = new File("./target/hdfs/").getAbsoluteFile();
         FileUtil.fullyDelete(baseDir);
         conf.set(MiniDFSCluster.HDFS_MINIDFS_BASEDIR, baseDir.getAbsolutePath());
+        conf.set("dfs.webhdfs.enabled", "false"); //to avoid a problem with servlet container
         MiniDFSCluster.Builder builder = new MiniDFSCluster.Builder(conf);
         cluster = builder.build();
+        System.out.println("Cluster URI: " + cluster.getURI());
     }
 
     @After

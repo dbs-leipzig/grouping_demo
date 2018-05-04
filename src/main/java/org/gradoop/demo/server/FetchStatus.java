@@ -6,9 +6,9 @@ import static java.util.Objects.requireNonNull;
 
 final class FetchStatus {
     enum Status {
-        PRESENT_LOCALLY,
+        FETCH_ERROR,
         FETCHED_FROM_HDFS,
-        FETCH_ERROR
+        PRESENT_LOCALLY
     }
     private final String name;
     private final Status status;
