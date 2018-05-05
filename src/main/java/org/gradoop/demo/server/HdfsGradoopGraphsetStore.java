@@ -24,14 +24,14 @@ import static org.gradoop.demo.server.Constants.GRADOOP_FILE_NAMES;
  */
 public class HdfsGradoopGraphsetStore extends Configured {
 
-    public static final String DEFAULT_BASE_PATH = "/app/ugraph/gradoop-graphsets/";
+    public static final String DEFAULT_BASE_PATH_IN_HDFS = "/app/ugraph/gradoop-graphsets/";
     private static final Logger log = LoggerFactory.getLogger(HdfsGradoopGraphsetStore.class);
 
     private final String basePath; // must start with HDFS_PREF
     private final URI clusterUri;
 
     public HdfsGradoopGraphsetStore(URI clusterUri) {
-        this(clusterUri, DEFAULT_BASE_PATH);
+        this(clusterUri, DEFAULT_BASE_PATH_IN_HDFS);
     }
 
     public HdfsGradoopGraphsetStore(URI clusterUri, String basePath) {

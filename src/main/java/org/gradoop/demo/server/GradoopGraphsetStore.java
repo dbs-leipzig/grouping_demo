@@ -43,4 +43,7 @@ interface GradoopGraphsetStore {
      * </p>
      */
     Set<FetchStatus> refresh() throws IOException;
+
+    /** Decides whether this store is "local-only" */
+    boolean isLocal();
 }

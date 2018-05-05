@@ -21,11 +21,12 @@ import static org.gradoop.demo.server.FetchStatus.Status.PRESENT_LOCALLY;
 class LocalGradoopGraphsetStore implements GradoopGraphsetStore {
 
     private static final Logger log = LoggerFactory.getLogger(LocalGradoopGraphsetStore.class);
+    static final String DEFAULT_LOCAL_PATH = System.getProperty("user.dir") + "/target/classes/data";
     private final File localBase;
     private final HdfsGradoopGraphsetStore hdfsStore;
 
     LocalGradoopGraphsetStore(URI clusterUri, String localPath) {
-        this(clusterUri, HdfsGradoopGraphsetStore.DEFAULT_BASE_PATH, localPath);
+        this(clusterUri, HdfsGradoopGraphsetStore.DEFAULT_BASE_PATH_IN_HDFS, localPath);
     }
 
     LocalGradoopGraphsetStore(URI clusterUri, String remoteBasePath, String localPath) {
@@ -50,7 +51,7 @@ class LocalGradoopGraphsetStore implements GradoopGraphsetStore {
 
     @Override
     public String getPath(String dataSourceName) {
-        return localBase.getAbsolutePath();
+        return localBase.getAbsolutePath() + "/" + dataSourceName;
     }
 
     @Override
@@ -80,6 +81,11 @@ class LocalGradoopGraphsetStore implements GradoopGraphsetStore {
         return result;
     }
 
+    @Override
+    public boolean isLocal() {
+        return this.hdfsStore == null;
+    }
+
     /**
      * Fetch the required files (metadata.csv, vertices.csv, edges.csv) for the given Gradoop graphset name
      * the files are copied to {@linkplain #localBase}. The structure would be:
@@ -93,5 +99,12 @@ class LocalGradoopGraphsetStore implements GradoopGraphsetStore {
             log.warn("{} could not be fetched from HDFS", graphsetName);
             return new FetchStatus(graphsetName, FETCH_ERROR);
         }
+    }
+
+    @Override
+    public String toString() {
+        String uri = this.hdfsStore == null ? null : this.hdfsStore.toString();
+        return "LocalGradoopGraphsetStore: Cluster URI: " + uri + ", Local Base Path: " +
+            this.localBase.getAbsolutePath();
     }
 }

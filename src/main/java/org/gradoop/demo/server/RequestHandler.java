@@ -65,7 +65,9 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
+import static org.gradoop.demo.server.Constants.DATASOURCES_NAME_KEY;
 import static org.gradoop.demo.server.Server.ENV;
+import static org.gradoop.demo.server.Server.LOCAL_STORE;
 
 /**
  * Handles REST requests to the server.
@@ -77,6 +79,14 @@ public class RequestHandler {
 
     private GradoopFlinkConfig config = GradoopFlinkConfig.createConfig(ENV);
 
+    static JSONObject toJson(Set<String> dataSourceNames) throws JSONException {
+        // caters to a drop-down
+        JSONObject result = new JSONObject();
+        JSONArray array = new JSONArray(dataSourceNames);
+        result.put(DATASOURCES_NAME_KEY, array);
+        return result;
+    }
+
     /**
      * <p>Returns the names of the databases to explore.
      * Each database is a folder at a given location.</p>
@@ -84,8 +94,16 @@ public class RequestHandler {
     @GET
     @Path("/dbnames")
     @Produces("application/json;charset=utf-8")
-    public Response getDatabaseNames() {
-        throw new RuntimeException("nyi");
+    public Response getDatabaseNames() throws JSONException {
+        // always refresh from HDFS todo provide a flag?
+        try {
+            LOCAL_STORE.refresh();
+        } catch (IOException e) {
+            // squelching exception here because we do not want to disrupt the other flow, let user use other datasets
+            e.printStackTrace(System.err);
+        }
+        JSONObject result = toJson(LOCAL_STORE.getDataSourceNames());
+        return Response.ok(result.toString()).build();
     }
 
     /**
@@ -340,7 +358,6 @@ public class RequestHandler {
 
         return Response.ok(json).build();
     }
-
 
     /**
      * Takes a {@link GroupingRequest}, executes a grouping with the parameters it contains and

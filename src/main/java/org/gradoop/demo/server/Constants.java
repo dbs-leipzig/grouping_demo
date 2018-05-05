@@ -12,6 +12,7 @@ public final class Constants {
     static final Set<String> GRADOOP_FILE_NAMES =
         unmodifiableSet(newHashSet("metadata.csv", "vertices.csv", "edges.csv"));
 
+    static final String DATASOURCES_NAME_KEY = "datasourceNames";
     private Constants() {
     }
 }

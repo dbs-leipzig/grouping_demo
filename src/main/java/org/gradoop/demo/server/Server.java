@@ -31,6 +31,7 @@ import org.glassfish.grizzly.http.server.StaticHttpHandler;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -42,6 +43,7 @@ import static java.lang.System.setOut;
 import static java.util.Objects.requireNonNull;
 import static org.apache.flink.api.java.ExecutionEnvironment.createLocalEnvironment;
 import static org.apache.flink.api.java.ExecutionEnvironment.createRemoteEnvironment;
+import static org.gradoop.demo.server.LocalGradoopGraphsetStore.DEFAULT_LOCAL_PATH;
 
 /**
  * Basic class, used for starting and stopping the server.
@@ -79,7 +81,7 @@ public class Server {
      * @return the running server
      * @throws IOException if server creation fails
      */
-    private static HttpServer startServer(String[] args) throws IOException {
+    private static HttpServer startServer(String[] args) throws IOException, URISyntaxException {
         System.out.println("Starting grizzly...");
         ResourceConfig rc = new PackagesResourceConfig("org/gradoop/demo/server");
         rc.getFeatures().put(JSONConfiguration.FEATURE_POJO_MAPPING, true);
@@ -96,7 +98,14 @@ public class Server {
         }
         URI baseURI = getBaseURI(ip);
         ENV = getExecutionEnvironment(jmHost, jmPort);
+        String hdfsParam = "hdfs";
+        if (params.has(hdfsParam)) {
+            LOCAL_STORE = new LocalGradoopGraphsetStore(new URI(params.get(hdfsParam)), DEFAULT_LOCAL_PATH);
+        } else {
+            LOCAL_STORE = new LocalGradoopGraphsetStore(null, DEFAULT_LOCAL_PATH);
+        }
         System.out.println("Execution Environment: " + ENV);
+        System.out.println(LOCAL_STORE);
         HttpServer server = GrizzlyServerFactory.createHttpServer(baseURI, rc);
         HttpHandler staticHandler = new StaticHttpHandler(
             Server.class.getResource("/web").getPath());
@@ -135,7 +144,7 @@ public class Server {
      * @param args command line parameters
      * @throws IOException if server creation fails
      */
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) throws IOException, InterruptedException, URISyntaxException {
         HttpServer httpServer = startServer(args);
 //    System.in.read();
 //    httpServer.stop();
