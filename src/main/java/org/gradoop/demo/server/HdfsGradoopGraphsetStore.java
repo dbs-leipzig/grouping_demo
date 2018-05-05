@@ -7,6 +7,7 @@ import org.apache.hadoop.fs.FileUtil;
 import org.apache.hadoop.fs.LocatedFileStatus;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.RemoteIterator;
+import org.apache.hadoop.hdfs.HdfsConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +28,7 @@ public class HdfsGradoopGraphsetStore extends Configured {
     public static final String DEFAULT_BASE_PATH_IN_HDFS = "/app/ugraph/gradoop-graphsets/";
     private static final Logger log = LoggerFactory.getLogger(HdfsGradoopGraphsetStore.class);
 
-    private final String basePath; // must start with HDFS_PREF
+    private final String basePath;
     private final URI clusterUri;
     private final Configuration config;
 
@@ -40,7 +41,7 @@ public class HdfsGradoopGraphsetStore extends Configured {
         requireNonNull(basePath);
         this.clusterUri = clusterUri;
         this.basePath = basePath;
-        this.config = new Configuration(true);
+        this.config = new HdfsConfiguration(true);
         config.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
         config.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
     }
@@ -93,8 +94,13 @@ public class HdfsGradoopGraphsetStore extends Configured {
         // copying all the files is critical, so make it an all-or-nothing operations, cleaning up
         // however, transactional semantics are not intended here
         Path basePath = new Path(this.clusterUri + this.basePath);
-        FileSystem fs = basePath.getFileSystem(new Configuration(true));
-        Path localPath = new Path(localBase.getAbsolutePath());
+        FileSystem fs = basePath.getFileSystem(config);
+        File localGraphsetFolder = new File(localBase, graphsetName);
+        boolean a = localGraphsetFolder.mkdirs();
+        if (! a) {
+            throw new RuntimeException("Unlikely error in making the local folder: " + localGraphsetFolder);
+        }
+        Path localPath = new Path(localGraphsetFolder.getAbsolutePath());
         try {
             for (String f : GRADOOP_FILE_NAMES) {
                 Path remotePath = new Path(this.basePath + "/" + graphsetName + "/" + f);
