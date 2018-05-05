@@ -29,6 +29,7 @@ public class HdfsGradoopGraphsetStore extends Configured {
 
     private final String basePath; // must start with HDFS_PREF
     private final URI clusterUri;
+    private final Configuration config;
 
     public HdfsGradoopGraphsetStore(URI clusterUri) {
         this(clusterUri, DEFAULT_BASE_PATH_IN_HDFS);
@@ -39,11 +40,14 @@ public class HdfsGradoopGraphsetStore extends Configured {
         requireNonNull(basePath);
         this.clusterUri = clusterUri;
         this.basePath = basePath;
+        this.config = new Configuration(true);
+        config.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
+        config.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
     }
 
     public Set<String> getDataSourceNames() throws IOException {
         Path basePath = new Path(this.clusterUri + this.basePath);
-        FileSystem fs = basePath.getFileSystem(new Configuration(true));
+        FileSystem fs = basePath.getFileSystem(config);
 //        if (!fs.getFileStatus(basePath).isDirectory()) {
 //            throw new RuntimeException("path is not a directory: " + basePath);
 //        }
