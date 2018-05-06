@@ -44,10 +44,11 @@ public class HdfsGradoopGraphsetStore extends Configured {
         this.config = new HdfsConfiguration(true);
         config.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
         config.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
+        config.set("fs.default.name", clusterUri.toString());
     }
 
     public Set<String> getDataSourceNames() throws IOException {
-        Path basePath = new Path(this.clusterUri + this.basePath);
+        Path basePath = new Path(this.basePath);
         FileSystem fs = basePath.getFileSystem(config);
 //        if (!fs.getFileStatus(basePath).isDirectory()) {
 //            throw new RuntimeException("path is not a directory: " + basePath);
@@ -57,12 +58,11 @@ public class HdfsGradoopGraphsetStore extends Configured {
             RemoteIterator<LocatedFileStatus> iter = fs.listFiles(basePath, true);
             while (iter.hasNext()) {
                 LocatedFileStatus fstat = iter.next();
-                String name = getGradoopGraphsetName(fstat.getPath().toString());
-                if (name != null) {
-                    dataSources.add(name); // return value ignored
+                String name = getGradoopGraphsetName(fstat.getPath().toUri().getPath());
+                if (name != null && ! dataSources.contains(name)) {
+                    boolean added = dataSources.add(name);
+                    assert added;
                     log.debug("adding graphset: " + name);
-                } else {
-                    log.debug("not a graphset, ignoring: " + name);
                 }
             }
         } catch (Exception e) {
@@ -77,23 +77,25 @@ public class HdfsGradoopGraphsetStore extends Configured {
 
     private String getGradoopGraphsetName(String path) {
         //TODO improve this logic
-        String prefix = clusterUri + basePath;
+        String prefix = basePath;
         String rem = path.substring(prefix.length());
         int fsi = rem.indexOf('/'); // index of first slash in rem e.g. "one/foo"
         if (fsi < 0) {
+            log.debug("Returning null, this is not a gradoop graphset: " + path);
             return null;
         }
         String folder = rem.substring(0, fsi);
         if (rem.length() - folder.length() > 1) {
             return folder;
         }
+        log.debug("Returning null, this is not a gradoop graphset: " + path);
         return null;
     }
 
     /* package-private */void copyGradoopFiles(String graphsetName, File localBase) throws Exception {
         // copying all the files is critical, so make it an all-or-nothing operations, cleaning up
         // however, transactional semantics are not intended here
-        Path basePath = new Path(this.clusterUri + this.basePath);
+        Path basePath = new Path(this.basePath);
         FileSystem fs = basePath.getFileSystem(config);
         File localGraphsetFolder = new File(localBase, graphsetName);
         boolean a = localGraphsetFolder.mkdirs();
@@ -105,10 +107,13 @@ public class HdfsGradoopGraphsetStore extends Configured {
             for (String f : GRADOOP_FILE_NAMES) {
                 Path remotePath = new Path(this.basePath + "/" + graphsetName + "/" + f);
                 fs.copyToLocalFile(true, remotePath, localPath);
+                log.info("Copied {} to {}", remotePath.toString(), localPath);
+                File gf = new File(localPath.toString(), f);
+                log.info("File {} exists? : {}", gf.getAbsolutePath(), gf.exists());
             }
         } catch (Exception e) {
             log.warn("Error copying graphset: {}, deleting the whole folder: " + e.getMessage());
-            FileUtil.fullyDelete(new File(localPath.toString() + "/" + graphsetName));
+            FileUtil.fullyDelete(localGraphsetFolder);
             throw e; //rethrow
         }
     }

@@ -54,7 +54,7 @@ public class HdfsGradoopGraphsetStoreBasicTest {
         DFSTestUtil.createFile(fs, new Path(DEFAULT_BASE_PATH_IN_HDFS + "/another-file.txt"), 100L, (short) 3, 123L);
         HdfsGradoopGraphsetStore store = new HdfsGradoopGraphsetStore(cluster.getURI());
         Set<String> names = store.getDataSourceNames();
-        assertEquals("only three elements", 4L, names.size());
+        assertEquals("set contains four elements", 4L, names.size());
         assertTrue("set contains foo", names.contains("foo"));
         assertTrue("set contains bar", names.contains("bar"));
         assertTrue("set contains baz", names.contains("baz"));
