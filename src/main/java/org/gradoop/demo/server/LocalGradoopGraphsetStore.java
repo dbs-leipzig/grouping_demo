@@ -69,10 +69,10 @@ class LocalGradoopGraphsetStore implements GradoopGraphsetStore {
                 assert a;
                 boolean b = localNames.remove(remoteName);
                 if (!b) {
-                    log.debug("graphset was not available locally: " + remoteName);
+                    log.debug("graphset was not available locally: ", remoteName);
                 }
                 log.info("**********************************************");
-                log.info("Graphset was copied from HDFS: {}" + remoteName);
+                log.info("Graphset was copied from HDFS: {}", remoteName);
                 log.info("**********************************************");
             }
         }
@@ -80,7 +80,7 @@ class LocalGradoopGraphsetStore implements GradoopGraphsetStore {
         localNames.forEach(name -> {
             FetchStatus e = new FetchStatus(name, PRESENT_LOCALLY);
             log.info("**********************************************");
-            log.info("Graphset was present locally: {}" + name);
+            log.info("Graphset was present locally: {}", name);
             log.info("**********************************************");
             result.add(e);
         });

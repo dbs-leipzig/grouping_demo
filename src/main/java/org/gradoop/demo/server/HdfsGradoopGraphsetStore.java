@@ -62,7 +62,7 @@ public class HdfsGradoopGraphsetStore extends Configured {
                 if (name != null && ! dataSources.contains(name)) {
                     boolean added = dataSources.add(name);
                     assert added;
-                    log.debug("adding graphset: " + name);
+                    log.debug("adding graphset: {}", name);
                 }
             }
         } catch (Exception e) {
@@ -81,14 +81,14 @@ public class HdfsGradoopGraphsetStore extends Configured {
         String rem = path.substring(prefix.length());
         int fsi = rem.indexOf('/'); // index of first slash in rem e.g. "one/foo"
         if (fsi < 0) {
-            log.debug("Returning null, this is not a gradoop graphset: " + path);
+            log.debug("Returning null, this is not a gradoop graphset: {}", path);
             return null;
         }
         String folder = rem.substring(0, fsi);
         if (rem.length() - folder.length() > 1) {
             return folder;
         }
-        log.debug("Returning null, this is not a gradoop graphset: " + path);
+        log.debug("Returning null, this is not a gradoop graphset: {}", path);
         return null;
     }
 
