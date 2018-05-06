@@ -71,11 +71,17 @@ class LocalGradoopGraphsetStore implements GradoopGraphsetStore {
                 if (!b) {
                     log.debug("graphset was not available locally: " + remoteName);
                 }
+                log.info("**********************************************");
+                log.info("Graphset was copied from HDFS: {}" + remoteName);
+                log.info("**********************************************");
             }
         }
         // remaining
         localNames.forEach(name -> {
             FetchStatus e = new FetchStatus(name, PRESENT_LOCALLY);
+            log.info("**********************************************");
+            log.info("Graphset was present locally: {}" + name);
+            log.info("**********************************************");
             result.add(e);
         });
         return result;

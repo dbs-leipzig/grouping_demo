@@ -106,10 +106,10 @@ public class HdfsGradoopGraphsetStore extends Configured {
         try {
             for (String f : GRADOOP_FILE_NAMES) {
                 Path remotePath = new Path(this.basePath + "/" + graphsetName + "/" + f);
-                fs.copyToLocalFile(true, remotePath, localPath);
+                fs.copyToLocalFile(false, remotePath, localPath);
                 log.info("Copied {} to {}", remotePath.toString(), localPath);
                 File gf = new File(localPath.toString(), f);
-                log.info("File {} exists? : {}", gf.getAbsolutePath(), gf.exists());
+                log.debug("File {} -- is it copied? : {}", gf.getAbsolutePath(), gf.exists());
             }
         } catch (Exception e) {
             log.warn("Error copying graphset: {}, deleting the whole folder: " + e.getMessage());
