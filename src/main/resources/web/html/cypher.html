@@ -17,31 +17,33 @@
 <html>
 <head>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Gradoop Demo</title>
-    <link rel="stylesheet" type="text/css" href="../stylesheets/spectre.min.css" />
-    <link rel="stylesheet" type="text/css" href="../stylesheets/spectre-exp.min.css" />
-    <link rel="stylesheet" type="text/css" href="../stylesheets/spectre-icons.min.css" />
-    <link rel="stylesheet" type="text/css" href="../stylesheets/jquery.qtip.css">
-    <link rel="stylesheet" type="text/css" href="../stylesheets/select2.min.css">
-    <link rel="stylesheet" type="text/css" href="../stylesheets/codeMirror/codemirror.css">
-    <link rel="stylesheet" type="text/css" href="../stylesheets/codeMirror/neo.css">
-    <link rel="stylesheet" type="text/css" href="../stylesheets/layout.css">
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Gradoop Demo</title>
+        <link rel="stylesheet" type="text/css" href="../stylesheets/spectre.min.css"/>
+        <link rel="stylesheet" type="text/css" href="../stylesheets/spectre-exp.min.css"/>
+        <link rel="stylesheet" type="text/css" href="../stylesheets/spectre-icons.min.css"/>
+        <link rel="stylesheet" type="text/css" href="../stylesheets/jquery.qtip.css">
+        <link rel="stylesheet" type="text/css" href="../stylesheets/select2.min.css">
+        <link rel="stylesheet" type="text/css" href="../stylesheets/codeMirror/codemirror.css">
+        <link rel="stylesheet" type="text/css" href="../stylesheets/codeMirror/neo.css">
+        <link rel="stylesheet" type="text/css" href="../stylesheets/layout.css">
 
-    <script src="../javascript/jquery-1.11.3.min.js"></script>
-    <script src="../javascript/cytoscape/cytoscape.min.js"></script>
-    <script src="../javascript/cytoscape/cytoscape-qtip.js"></script>
-    <script src="../javascript/jquery.qtip.min.js"></script>
-    <script src="../javascript/cytoscape/dagre.js"></script>
-    <script src="../javascript/cytoscape/cytoscape-dagre.js"></script>
-    <script src="../javascript/codeMirror/codemirror.js" type="text/javascript" charset="utf-8"></script>
-    <script src="../javascript/codeMirror/cypher.js" type="text/javascript" charset="utf-8"></script>
-    <script src="../javascript/select2.full.min.js"></script>
-    <script src="../javascript/cypher.js"></script>
-</head>
+        <script src="../javascript/jquery-1.11.3.min.js"></script>
+        <script src="../javascript/cytoscape/cytoscape.min.js"></script>
+        <script src="../javascript/cytoscape/cytoscape-qtip.js"></script>
+        <script src="../javascript/jquery.qtip.min.js"></script>
+        <script src="../javascript/cytoscape/dagre.js"></script>
+        <script src="../javascript/cytoscape/cytoscape-dagre.js"></script>
+        <script src="../javascript/codeMirror/codemirror.js" type="text/javascript"
+                charset="utf-8"></script>
+        <script src="../javascript/codeMirror/cypher.js" type="text/javascript"
+                charset="utf-8"></script>
+        <script src="../javascript/select2.full.min.js"></script>
+        <script src="../javascript/cypher.js"></script>
+    </head>
 <body>
 <header class="page-header">
     <section class="container">
@@ -72,10 +74,8 @@
                         <form id="cypher-query-form">
                             <div class="form-group">
                                 <label class="form-label" for="databaseName">Graph</label>
-                                <select class="form-select" id="databaseName" name="databaseName"  style="width:100%">
-                                    <option value="Graphalytics_SF1_Sample">Graphalytics</option>
-                                    <option value="Example">Example</option>
-                                    <option value="Pokec_Sample">Pokec</option>
+                                <select class="form-select" id="databaseName" name="databaseName"
+                                        style="width:100%">
                                 </select>
                             </div>
 
@@ -87,7 +87,8 @@ WHERE n.firstName='Paul'</textarea>
 
                             <div class="form-group">
                                 <label class="form-switch" for="attacheData">
-                                    <input type="checkbox" id="attacheData" name="attacheData" value="true" checked>
+                                    <input type="checkbox" id="attacheData" name="attacheData"
+                                           value="true" checked>
                                     <i class="form-icon"></i> Attache Attributes
                                 </label>
                             </div>
@@ -112,7 +113,7 @@ WHERE n.firstName='Paul'</textarea>
                     </li>
                 </ul>
                 <div id="tab-graph-view">
-                    <div id="canvas"> </div>
+                    <div id="canvas"></div>
                 </div>
                 <div id="tab-table-view" style="display:none;overflow:auto">
                     <table class="table table-striped" id="cypher-result-table">
@@ -135,9 +136,23 @@ WHERE n.firstName='Paul'</textarea>
             Demo Version 0.2.0
         </p>
         <p>
-            Licensed under the <a href="https://github.com/dbs-leipzig/gradoop/blob/master/LICENSE" >Apache 2.0 License</a>.
+            Licensed under the <a href="https://github.com/dbs-leipzig/gradoop/blob/master/LICENSE">Apache
+            2.0 License</a>.
         </p>
     </div>
 </footer>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $.getJSON('/dbnames')
+            .done(function (data) {
+                data.datasourceNames.sort();
+                $.each(data.datasourceNames, function (i, graphset) {
+                    // data is {datasourceNames:[name1, name2, ...]}
+                    console.log(i + " " + graphset);
+                    $("#databaseName").append($('<option></option>').text(graphset));
+                });
+            });
+    });
+</script>
 </body>
 </html>
