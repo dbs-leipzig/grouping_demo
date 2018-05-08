@@ -25,6 +25,7 @@ import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.RemoteEnvironment;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hdfs.HdfsConfiguration;
 import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.StaticHttpHandler;
@@ -101,7 +102,7 @@ public class Server {
         ENV = getExecutionEnvironment(jmHost, jmPort);
         String hdfsParam = "hdfs";
         if (params.getBoolean(hdfsParam, false)) {
-            LOCAL_STORE = new LocalGradoopGraphsetStore(new Configuration(), DEFAULT_LOCAL_PATH);
+            LOCAL_STORE = new LocalGradoopGraphsetStore(new HdfsConfiguration(true), DEFAULT_LOCAL_PATH);
         } else {
             LOCAL_STORE = new LocalGradoopGraphsetStore(null, DEFAULT_LOCAL_PATH);
         }

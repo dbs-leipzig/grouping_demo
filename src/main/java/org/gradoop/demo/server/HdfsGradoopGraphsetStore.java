@@ -36,9 +36,12 @@ public class HdfsGradoopGraphsetStore extends Configured {
     }
 
     public HdfsGradoopGraphsetStore(Configuration config, String basePath) {
+        requireNonNull(config);
         requireNonNull(basePath);
         this.basePath = basePath;
         this.config = config;
+        this.config.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
+        this.config.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
     }
 
     public Set<String> getDataSourceNames() throws IOException {
