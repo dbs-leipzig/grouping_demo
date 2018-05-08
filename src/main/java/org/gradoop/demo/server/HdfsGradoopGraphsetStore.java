@@ -29,22 +29,16 @@ public class HdfsGradoopGraphsetStore extends Configured {
     private static final Logger log = LoggerFactory.getLogger(HdfsGradoopGraphsetStore.class);
 
     private final String basePath;
-    private final URI clusterUri;
     private final Configuration config;
 
-    public HdfsGradoopGraphsetStore(URI clusterUri) {
-        this(clusterUri, DEFAULT_BASE_PATH_IN_HDFS);
+    public HdfsGradoopGraphsetStore() {
+        this(new Configuration(), DEFAULT_BASE_PATH_IN_HDFS);
     }
 
-    public HdfsGradoopGraphsetStore(URI clusterUri, String basePath) {
-        requireNonNull(clusterUri);
+    public HdfsGradoopGraphsetStore(Configuration config, String basePath) {
         requireNonNull(basePath);
-        this.clusterUri = clusterUri;
         this.basePath = basePath;
-        this.config = new HdfsConfiguration(true);
-        config.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
-        config.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
-        config.set("fs.default.name", clusterUri.toString());
+        this.config = config;
     }
 
     public Set<String> getDataSourceNames() throws IOException {
@@ -73,6 +67,12 @@ public class HdfsGradoopGraphsetStore extends Configured {
             }
         }
         return dataSources;
+    }
+
+    @Override
+    public String toString() {
+        return "[fs.default.name:" + config.get("fs.default.name") + ", fs.hdfs.impl: " +
+            config.get("fs.hdfs.impl") + ", basePath: " + basePath + "]";
     }
 
     private String getGradoopGraphsetName(String path) {

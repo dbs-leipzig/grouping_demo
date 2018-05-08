@@ -18,10 +18,10 @@ interface GradoopGraphsetStore {
     Set<String> getDataSourceNames();
 
     /**
-     * Returns the absolute path of the file that represent this data source. Remember that every data source
-     * is a
+     * Returns the absolute path of the files that represent this data source. Remember that every data source
+     * is a collection of three files: vertices.csv, edges.csv, and metadata.csv.
      * @param dataSourceName
-     * @return
+     * @return a String representing the absolute path of the datasource, null otherwise
      */
     String getPath(String dataSourceName);
 

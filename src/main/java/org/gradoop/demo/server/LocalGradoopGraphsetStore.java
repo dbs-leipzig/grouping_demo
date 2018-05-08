@@ -1,5 +1,6 @@
 package org.gradoop.demo.server;
 
+import org.apache.hadoop.conf.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,19 +26,19 @@ class LocalGradoopGraphsetStore implements GradoopGraphsetStore {
     private final File localBase;
     private final HdfsGradoopGraphsetStore hdfsStore;
 
-    LocalGradoopGraphsetStore(URI clusterUri, String localPath) {
-        this(clusterUri, HdfsGradoopGraphsetStore.DEFAULT_BASE_PATH_IN_HDFS, localPath);
+    LocalGradoopGraphsetStore(Configuration config, String localPath) {
+        this(config, HdfsGradoopGraphsetStore.DEFAULT_BASE_PATH_IN_HDFS, localPath);
     }
 
-    LocalGradoopGraphsetStore(URI clusterUri, String remoteBasePath, String localPath) {
+    LocalGradoopGraphsetStore(Configuration config, String remoteBasePath, String localPath) {
         requireNonNull(remoteBasePath);
         requireNonNull(localPath);
         localBase = Paths.get(localPath).toFile();
         if (!localBase.isDirectory()) {
             throw new IllegalArgumentException("not a directory: " + localBase);
         }
-        if (clusterUri != null) {
-            hdfsStore = new HdfsGradoopGraphsetStore(clusterUri, remoteBasePath);
+        if (config != null) {
+            hdfsStore = new HdfsGradoopGraphsetStore(config, remoteBasePath);
         } else {
             hdfsStore = null; // we are configured to run off local
         }
@@ -109,8 +110,8 @@ class LocalGradoopGraphsetStore implements GradoopGraphsetStore {
 
     @Override
     public String toString() {
-        String uri = this.hdfsStore == null ? null : this.hdfsStore.toString();
-        return "LocalGradoopGraphsetStore: Cluster URI: " + uri + ", Local Base Path: " +
-            this.localBase.getAbsolutePath();
+        String hdfs = this.hdfsStore == null ? null : this.hdfsStore.toString();
+        return "**** [HDFS Store: " + hdfs + ", Local Base Path: " +
+            this.localBase.getAbsolutePath() + "] ****";
     }
 }

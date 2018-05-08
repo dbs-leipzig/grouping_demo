@@ -24,6 +24,7 @@ import com.sun.jersey.api.json.JSONConfiguration;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.RemoteEnvironment;
 import org.apache.flink.api.java.utils.ParameterTool;
+import org.apache.hadoop.conf.Configuration;
 import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.StaticHttpHandler;
@@ -99,8 +100,8 @@ public class Server {
         URI baseURI = getBaseURI(ip);
         ENV = getExecutionEnvironment(jmHost, jmPort);
         String hdfsParam = "hdfs";
-        if (params.has(hdfsParam)) {
-            LOCAL_STORE = new LocalGradoopGraphsetStore(new URI(params.get(hdfsParam)), DEFAULT_LOCAL_PATH);
+        if (params.getBoolean(hdfsParam, false)) {
+            LOCAL_STORE = new LocalGradoopGraphsetStore(new Configuration(), DEFAULT_LOCAL_PATH);
         } else {
             LOCAL_STORE = new LocalGradoopGraphsetStore(null, DEFAULT_LOCAL_PATH);
         }

@@ -24,11 +24,12 @@ public class HdfsGradoopGraphsetStoreBasicTest {
 
     //todo: this test is botched because of the JAR hell!
     private MiniDFSCluster cluster;
+    private Configuration conf;
     @Before
     public void setUp() throws Exception {
         org.apache.log4j.Logger.getLogger("org.apache").setLevel(Level.ERROR);
         org.apache.log4j.Logger.getLogger("BlockStateChange").setLevel(Level.ERROR);
-        Configuration conf = new HdfsConfiguration();
+        conf = new HdfsConfiguration();
         File baseDir = new File("./target/hdfs/").getAbsoluteFile();
         FileUtil.fullyDelete(baseDir);
         conf.set(MiniDFSCluster.HDFS_MINIDFS_BASEDIR, baseDir.getAbsolutePath());
@@ -52,7 +53,7 @@ public class HdfsGradoopGraphsetStoreBasicTest {
         DFSTestUtil.createFile(fs, new Path(DEFAULT_BASE_PATH_IN_HDFS + "/not.a.set"), 100L, (short) 3, 123L);
         createGradoopSet(fs, "foo", "bar", "baz", "longone");
         DFSTestUtil.createFile(fs, new Path(DEFAULT_BASE_PATH_IN_HDFS + "/another-file.txt"), 100L, (short) 3, 123L);
-        HdfsGradoopGraphsetStore store = new HdfsGradoopGraphsetStore(cluster.getURI());
+        HdfsGradoopGraphsetStore store = new HdfsGradoopGraphsetStore(conf, DEFAULT_BASE_PATH_IN_HDFS);
         Set<String> names = store.getDataSourceNames();
         assertEquals("set contains four elements", 4L, names.size());
         assertTrue("set contains foo", names.contains("foo"));
