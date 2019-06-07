@@ -23,7 +23,6 @@ import org.apache.flink.api.java.tuple.Tuple3;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
-import org.gradoop.common.model.impl.metadata.MetaData;
 import org.gradoop.common.model.impl.pojo.Edge;
 import org.gradoop.common.model.impl.pojo.GraphHead;
 import org.gradoop.common.model.impl.pojo.Vertex;
@@ -44,7 +43,6 @@ import org.gradoop.flink.model.impl.operators.aggregation.functions.min.MinEdgeP
 import org.gradoop.flink.model.impl.operators.aggregation.functions.min.MinVertexProperty;
 import org.gradoop.flink.model.impl.operators.aggregation.functions.sum.SumEdgeProperty;
 import org.gradoop.flink.model.impl.operators.aggregation.functions.sum.SumVertexProperty;
-import org.gradoop.flink.model.impl.operators.cypher.capf.result.CAPFQueryResult;
 import org.gradoop.flink.model.impl.operators.grouping.Grouping;
 import org.gradoop.flink.model.impl.operators.grouping.GroupingStrategy;
 import org.gradoop.flink.model.impl.operators.matching.common.MatchStrategy;
@@ -130,11 +128,9 @@ public class RequestHandler {
 
     // TODO load proper statistics
     GraphStatistics graphStatistics = new GraphStatistics(1, 1, 1, 1);
-//    TODO durr? GraphCollection res = graph.cypher(query,attacheData, MatchStrategy.HOMOMORPHISM,
-//      MatchStrategy.ISOMORPHISM, graphStatistics);
 
-    GraphCollection res = graph.cypher(query)
-      .getGraphs();
+    GraphCollection res = graph.query(query, attacheData, MatchStrategy.HOMOMORPHISM,
+      MatchStrategy.ISOMORPHISM, graphStatistics);
 
     return createResponse(res);
   }
@@ -184,7 +180,8 @@ public class RequestHandler {
   private JSONObject readKeysAndLabels(String databaseName) throws IOException, JSONException {
     String dataPath = RequestHandler.class.getResource("/data/" + databaseName).getFile();
     String content =
-      new String(Files.readAllBytes(Paths.get(dataPath + META_FILENAME)), StandardCharsets.UTF_8);
+      new String(Files.readAllBytes(Paths.get(dataPath + META_FILENAME)),
+        StandardCharsets.UTF_8);
 
     return new JSONObject(content);
   }
@@ -389,17 +386,20 @@ public class RequestHandler {
 
     String[] vertexAggrFuncs = request.getVertexAggrFuncs();
 
-    for(String vertexAggrFunc : vertexAggrFuncs) {
+    for (String vertexAggrFunc : vertexAggrFuncs) {
       String[] split = vertexAggrFunc.split(" ");
       switch (split[0]) {
       case "max":
-        builder.addVertexAggregateFunction(new MaxVertexProperty(split[1], "max " + split[1]));
+        builder.addVertexAggregateFunction(new MaxVertexProperty(split[1],
+          "max " + split[1]));
         break;
       case "min":
-        builder.addVertexAggregateFunction(new MinVertexProperty(split[1], "min " + split[1]));
+        builder.addVertexAggregateFunction(new MinVertexProperty(split[1],
+          "min " + split[1]));
         break;
       case "sum":
-        builder.addVertexAggregateFunction(new SumVertexProperty(split[1], "sum " + split[1]));
+        builder.addVertexAggregateFunction(new SumVertexProperty(split[1],
+          "sum " + split[1]));
         break;
       case "count":
         builder.addVertexAggregateFunction(new Count());
@@ -413,13 +413,16 @@ public class RequestHandler {
       String[] split = edgeAggrFunc.split(" ");
       switch (split[0]) {
       case "max":
-        builder.addEdgeAggregateFunction(new MaxEdgeProperty(split[1], "max " + split[1]));
+        builder.addEdgeAggregateFunction(new MaxEdgeProperty(split[1],
+          "max " + split[1]));
         break;
       case "min":
-        builder.addEdgeAggregateFunction(new MinEdgeProperty(split[1], "min " + split[1]));
+        builder.addEdgeAggregateFunction(new MinEdgeProperty(split[1],
+          "min " + split[1]));
         break;
       case "sum":
-        builder.addEdgeAggregateFunction(new SumEdgeProperty(split[1], "sum " + split[1]));
+        builder.addEdgeAggregateFunction(new SumEdgeProperty(split[1],
+          "sum " + split[1]));
         break;
       case "count":
         builder.addEdgeAggregateFunction(new Count());
@@ -460,7 +463,8 @@ public class RequestHandler {
     return getResponse(resultHead, resultVertices, resultEdges);
   }
 
-  private Response getResponse(List<GraphHead> resultHead, List<Vertex> resultVertices, List<Edge> resultEdges) {
+  private Response getResponse(List<GraphHead> resultHead, List<Vertex> resultVertices,
+    List<Edge> resultEdges) {
     try {
       ENV.execute();
       // build the response JSON from the collections
