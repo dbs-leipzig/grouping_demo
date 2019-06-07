@@ -23,25 +23,40 @@ import org.apache.flink.api.java.tuple.Tuple3;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.gradoop.common.model.impl.metadata.MetaData;
 import org.gradoop.common.model.impl.pojo.Edge;
 import org.gradoop.common.model.impl.pojo.GraphHead;
 import org.gradoop.common.model.impl.pojo.Vertex;
-import org.gradoop.demo.server.functions.*;
+import org.gradoop.demo.server.functions.AcceptNoneFilter;
+import org.gradoop.demo.server.functions.LabelFilter;
+import org.gradoop.demo.server.functions.LabelGroupReducer;
+import org.gradoop.demo.server.functions.LabelMapper;
+import org.gradoop.demo.server.functions.LabelReducer;
+import org.gradoop.demo.server.functions.PropertyKeyMapper;
 import org.gradoop.demo.server.pojo.GroupingRequest;
 import org.gradoop.flink.io.impl.csv.CSVDataSource;
-import org.gradoop.flink.model.api.epgm.GraphCollection;
-import org.gradoop.flink.model.api.epgm.LogicalGraph;
+import org.gradoop.flink.model.impl.epgm.GraphCollection;
+import org.gradoop.flink.model.impl.epgm.LogicalGraph;
+import org.gradoop.flink.model.impl.operators.aggregation.functions.count.Count;
+import org.gradoop.flink.model.impl.operators.aggregation.functions.max.MaxEdgeProperty;
+import org.gradoop.flink.model.impl.operators.aggregation.functions.max.MaxVertexProperty;
+import org.gradoop.flink.model.impl.operators.aggregation.functions.min.MinEdgeProperty;
+import org.gradoop.flink.model.impl.operators.aggregation.functions.min.MinVertexProperty;
+import org.gradoop.flink.model.impl.operators.aggregation.functions.sum.SumEdgeProperty;
+import org.gradoop.flink.model.impl.operators.aggregation.functions.sum.SumVertexProperty;
+import org.gradoop.flink.model.impl.operators.cypher.capf.result.CAPFQueryResult;
 import org.gradoop.flink.model.impl.operators.grouping.Grouping;
 import org.gradoop.flink.model.impl.operators.grouping.GroupingStrategy;
-import org.gradoop.flink.model.impl.operators.grouping.functions.aggregation.CountAggregator;
-import org.gradoop.flink.model.impl.operators.grouping.functions.aggregation.MaxAggregator;
-import org.gradoop.flink.model.impl.operators.grouping.functions.aggregation.MinAggregator;
-import org.gradoop.flink.model.impl.operators.grouping.functions.aggregation.SumAggregator;
 import org.gradoop.flink.model.impl.operators.matching.common.MatchStrategy;
 import org.gradoop.flink.model.impl.operators.matching.common.statistics.GraphStatistics;
 import org.gradoop.flink.util.GradoopFlinkConfig;
 
-import javax.ws.rs.*;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -105,7 +120,7 @@ public class RequestHandler {
   public Response executeCypher(
           @FormParam("databaseName") String databaseName,
           @FormParam("query") String query,
-          @DefaultValue("false") @FormParam("attacheData") boolean attacheData) {
+          @DefaultValue("false") @FormParam("attacheData") boolean attacheData) throws Exception {
     //load the database
     String path = RequestHandler.class.getResource("/data/" + databaseName).getPath();
 
@@ -115,7 +130,11 @@ public class RequestHandler {
 
     // TODO load proper statistics
     GraphStatistics graphStatistics = new GraphStatistics(1, 1, 1, 1);
-    GraphCollection res = graph.cypher(query,attacheData, MatchStrategy.HOMOMORPHISM, MatchStrategy.ISOMORPHISM, graphStatistics);
+//    TODO durr? GraphCollection res = graph.cypher(query,attacheData, MatchStrategy.HOMOMORPHISM,
+//      MatchStrategy.ISOMORPHISM, graphStatistics);
+
+    GraphCollection res = graph.cypher(query)
+      .getGraphs();
 
     return createResponse(res);
   }
@@ -374,16 +393,16 @@ public class RequestHandler {
       String[] split = vertexAggrFunc.split(" ");
       switch (split[0]) {
       case "max":
-        builder.addVertexAggregator(new MaxAggregator(split[1], "max " + split[1]));
+        builder.addVertexAggregateFunction(new MaxVertexProperty(split[1], "max " + split[1]));
         break;
       case "min":
-        builder.addVertexAggregator(new MinAggregator(split[1], "min " + split[1]));
+        builder.addVertexAggregateFunction(new MinVertexProperty(split[1], "min " + split[1]));
         break;
       case "sum":
-        builder.addVertexAggregator(new SumAggregator(split[1], "sum " + split[1]));
+        builder.addVertexAggregateFunction(new SumVertexProperty(split[1], "sum " + split[1]));
         break;
       case "count":
-        builder.addVertexAggregator(new CountAggregator());
+        builder.addVertexAggregateFunction(new Count());
         break;
       }
     }
@@ -394,16 +413,16 @@ public class RequestHandler {
       String[] split = edgeAggrFunc.split(" ");
       switch (split[0]) {
       case "max":
-        builder.addEdgeAggregator(new MaxAggregator(split[1], "max " + split[1]));
+        builder.addEdgeAggregateFunction(new MaxEdgeProperty(split[1], "max " + split[1]));
         break;
       case "min":
-        builder.addEdgeAggregator(new MinAggregator(split[1], "min " + split[1]));
+        builder.addEdgeAggregateFunction(new MinEdgeProperty(split[1], "min " + split[1]));
         break;
       case "sum":
-        builder.addEdgeAggregator(new SumAggregator(split[1], "sum " + split[1]));
+        builder.addEdgeAggregateFunction(new SumEdgeProperty(split[1], "sum " + split[1]));
         break;
       case "count":
-        builder.addEdgeAggregator(new CountAggregator());
+        builder.addEdgeAggregateFunction(new Count());
         break;
       }
     }
