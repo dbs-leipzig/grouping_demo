@@ -18,7 +18,7 @@ package org.gradoop.demo.server.functions;
 
 import com.google.common.collect.Sets;
 import org.apache.flink.api.common.functions.MapFunction;
-import org.gradoop.common.model.api.entities.EPGMElement;
+import org.gradoop.common.model.impl.pojo.EPGMElement;
 
 import java.util.Set;
 

@@ -61,8 +61,12 @@ public class GroupingRequest {
   /**
    * true, if all edges shall be filtered
    */
-
   private boolean filterAllEdges;
+
+  /**
+   * true: vertices that are not member of any labelGroup are converted as is to supervertices.
+   */
+  private boolean retainVertices;
 
   /**
    * set the database name
@@ -132,6 +136,15 @@ public class GroupingRequest {
    */
   public void setFilterAllEdges(boolean filterAllEdges) {
     this.filterAllEdges = filterAllEdges;
+  }
+
+  /**
+   * set if vertex retention should be used.
+   *
+   * @param retainVertices vertex retention
+   */
+  public void setRetainVertices(boolean retainVertices) {
+    this.retainVertices = retainVertices;
   }
 
   /**
@@ -209,17 +222,27 @@ public class GroupingRequest {
   }
 
   /**
+   * Returns whether vertices retention is used.
+   *
+   * @return vertices retention
+   */
+  public boolean getRetainVertices() {
+    return retainVertices;
+  }
+
+  /**
    * Returns a human readable representation of the request.
    *
    * @return human readable string
    */
-
   @Override
   public String toString() {
     return "DB name: " + dbName + "\n" + "Vertex keys: " + Arrays.toString(vertexKeys) + "\n" +
       "Edge keys: " + Arrays.toString(edgeKeys) + "\n" + "Vertex aggrFunc: " + vertexAggrFuncs +
       "\n" + "Edge aggrFunc: " + edgeAggrFuncs + "\n" + "Vertex filters: " +
       Arrays.toString(vertexFilters) + "\n" + "Edge filters: " + Arrays.toString(edgeFilters) +
-      "\n";
+      "\n" + "Retain vertices: " + retainVertices + "\n";
   }
+
+
 }

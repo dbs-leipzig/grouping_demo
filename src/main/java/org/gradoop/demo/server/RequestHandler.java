@@ -23,9 +23,9 @@ import org.apache.flink.api.java.tuple.Tuple3;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
-import org.gradoop.common.model.impl.pojo.Edge;
-import org.gradoop.common.model.impl.pojo.GraphHead;
-import org.gradoop.common.model.impl.pojo.Vertex;
+import org.gradoop.common.model.impl.pojo.EPGMEdge;
+import org.gradoop.common.model.impl.pojo.EPGMGraphHead;
+import org.gradoop.common.model.impl.pojo.EPGMVertex;
 import org.gradoop.demo.server.functions.AcceptNoneFilter;
 import org.gradoop.demo.server.functions.LabelFilter;
 import org.gradoop.demo.server.functions.LabelGroupReducer;
@@ -430,19 +430,21 @@ public class RequestHandler {
       }
     }
 
+    builder.setRetainVerticesWithoutGroups(request.getRetainVertices());
+
     // by default, we use the group reduce strategy
     builder.setStrategy(GroupingStrategy.GROUP_REDUCE);
 
-    graph = builder.build().execute(graph);
+    graph = builder.<EPGMGraphHead, EPGMVertex, EPGMEdge, LogicalGraph, GraphCollection>build().execute(graph);
 
     // specify the output collections
     return createResponse(graph);
   }
 
   private Response createResponse(GraphCollection graph) {
-    List<GraphHead> resultHead = new ArrayList<>();
-    List<Vertex> resultVertices = new ArrayList<>();
-    List<Edge> resultEdges = new ArrayList<>();
+    List<EPGMGraphHead> resultHead = new ArrayList<>();
+    List<EPGMVertex> resultVertices = new ArrayList<>();
+    List<EPGMEdge> resultEdges = new ArrayList<>();
 
     graph.getGraphHeads().output(new LocalCollectionOutputFormat<>(resultHead));
     graph.getVertices().output(new LocalCollectionOutputFormat<>(resultVertices));
@@ -452,9 +454,9 @@ public class RequestHandler {
   }
 
   private Response createResponse(LogicalGraph graph) {
-    List<GraphHead> resultHead = new ArrayList<>();
-    List<Vertex> resultVertices = new ArrayList<>();
-    List<Edge> resultEdges = new ArrayList<>();
+    List<EPGMGraphHead> resultHead = new ArrayList<>();
+    List<EPGMVertex> resultVertices = new ArrayList<>();
+    List<EPGMEdge> resultEdges = new ArrayList<>();
 
     graph.getGraphHead().output(new LocalCollectionOutputFormat<>(resultHead));
     graph.getVertices().output(new LocalCollectionOutputFormat<>(resultVertices));
@@ -463,8 +465,8 @@ public class RequestHandler {
     return getResponse(resultHead, resultVertices, resultEdges);
   }
 
-  private Response getResponse(List<GraphHead> resultHead, List<Vertex> resultVertices,
-    List<Edge> resultEdges) {
+  private Response getResponse(List<EPGMGraphHead> resultHead, List<EPGMVertex> resultVertices,
+    List<EPGMEdge> resultEdges) {
     try {
       ENV.execute();
       // build the response JSON from the collections

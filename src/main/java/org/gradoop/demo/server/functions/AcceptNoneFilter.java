@@ -17,7 +17,7 @@
 package org.gradoop.demo.server.functions;
 
 import org.apache.flink.api.common.functions.FilterFunction;
-import org.gradoop.common.model.api.entities.EPGMElement;
+import org.gradoop.common.model.impl.pojo.EPGMElement;
 
 
 /**
