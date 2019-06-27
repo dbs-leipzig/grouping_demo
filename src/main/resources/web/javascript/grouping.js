@@ -90,7 +90,8 @@ $(document).on("change", '.redraw', function() {
 });
 
 /**
- * When the 'Execute' button is clicked, construct a request and send it to the server
+ * When the 'Execute' button is clicked, construct a request and send
+ * it to the server
  */
 $(document).on('click', ".execute-button", function () {
     let btn = $(this);
@@ -103,8 +104,11 @@ $(document).on('click', ".execute-button", function () {
         edgeAggrFuncs: getValues("#edgeAggrFuncs"),
         vertexFilters: getValues("#vertexFilters"),
         edgeFilters: getValues("#edgeFilters"),
-        filterAllEdges: getValues("#edgeFilters") === ["none"]
+        filterAllEdges: getValues("#edgeFilters") === ["none"],
+        retainVertices: $('#retainVertices').is(':checked')
     };
+
+    console.log("retainVertices? " + reqData.retainVertices);
 
     $.ajax({
         url: 'http://localhost:2342/grouping/',
