@@ -435,7 +435,9 @@ public class RequestHandler {
     // by default, we use the group reduce strategy
     builder.setStrategy(GroupingStrategy.GROUP_REDUCE);
 
-    graph = builder.<EPGMGraphHead, EPGMVertex, EPGMEdge, LogicalGraph, GraphCollection>build().execute(graph);
+    graph = builder
+      .<EPGMGraphHead, EPGMVertex, EPGMEdge, LogicalGraph, GraphCollection>build()
+      .execute(graph);
 
     // specify the output collections
     return createResponse(graph);
