@@ -108,8 +108,6 @@ $(document).on('click', ".execute-button", function () {
         retainVertices: $('#retainVertices').is(':checked')
     };
 
-    console.log("retainVertices? " + reqData.retainVertices);
-
     $.ajax({
         url: 'http://localhost:2342/grouping/',
         datatype: "text",
